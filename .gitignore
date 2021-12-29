@@ -1,0 +1,6 @@
+./dist
+./build
+.idea
+.DS_Store
+setup.pye
+Dockerfile

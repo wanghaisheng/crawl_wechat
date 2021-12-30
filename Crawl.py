@@ -626,14 +626,28 @@ class PomodoroAppWeiXinSite(object):
         for link in self.driver.find_elements_by_xpath(
                 '/html/body/div[2]/div/div/div/div/div[6]/div[2]/div[1]/div/div[2]/div[2]/form[1]/div[5]/div/div/div[2]/div/div/label'
         ):
-            if '\n' in link.text:
-                res = link.text.split('\n')
-                article_date = res[1]
-            else:
-                article_date = '1000-01-01'
+            title, article_date = self.empty_link_text(link.text)
             dates.append(datetime.datetime.strptime(article_date, '%Y-%m-%d'))
 
         return all([item <= _latest_new_datetime for item in dates])
+
+    def empty_link_text(self, text):
+        logger.info(text)
+        if '付费' in text:
+            res = text.split('\n')
+            title = res[1]
+
+            article_date = res[2]
+        else:
+            if '\n' in text:
+                res = text.split('\n')
+                article_date = res[1]
+                title = res[0]
+
+            else:
+                title = ''
+                article_date = '1000-01-01'
+        return title, article_date
 
     def get_articles(self, public_account, new_count, save=True):
         try:
@@ -642,13 +656,7 @@ class PomodoroAppWeiXinSite(object):
             for link in self.driver.find_elements_by_xpath(
                     '/html/body/div[2]/div/div/div/div/div[6]/div[2]/div[1]/div/div[2]/div[2]/form[1]/div[5]/div/div/div[2]/div/div/label'
             ):
-                if '\n' in link.text:
-                    res = link.text.split('\n')
-                    title = res[0]
-                    article_date = res[1]
-                else:
-                    title = link.text.strip()
-                    article_date = ''
+                title, article_date = self.empty_link_text(link.text)
                 href = link.find_element_by_tag_name('a').get_attribute('href')
 
                 if self.crawl_history_url_dict[public_account].get(href):

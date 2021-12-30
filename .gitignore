@@ -3,4 +3,4 @@
 .idea
 .DS_Store
 setup.pye
-Dockerfile
+Dockerfileates.append(datetime.datetime.strptime(article_date, '%Y-%m-%d'))
